@@ -2,6 +2,7 @@ require "pry"
 
 def decode(msg)
   original = msg
+  msg = remove_underscores(msg)
   if repeated_chars?(msg)
     msg = transform(msg)
     decode(msg)
@@ -15,7 +16,6 @@ def repeated_chars?(msg)
 end
 
 def transform(msg)
-  msg = remove_underscores(msg)
   spans = char_spans(msg)
   pair = spans.max_by{|span| span[:to] - span[:from]}
   chars = msg.split("")
