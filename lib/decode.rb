@@ -3,11 +3,7 @@ require "pry"
 def decode(msg)
   original = msg
   msg = remove_underscores(msg)
-  if repeated_chars?(msg)
-    decode(transform(msg))
-  else
-    msg
-  end
+  repeated_chars?(msg) ? decode(transform(msg)) : msg
 end
 
 def repeated_chars?(msg)
@@ -21,7 +17,6 @@ def transform(msg)
   chars.delete_at(pair[:from])
   chars.delete_at(pair[:to] - 1)
   chars << pair[:char]
-  # binding.pry
   chars.join("")
 end
 
@@ -37,17 +32,11 @@ def char_spans(msg)
         next_idx = chars[i+1..-1].index(char) + i + 1
         char_span = chars[i+1...next_idx]
         # only records spans that do not contain duplicates
-        if char_span.uniq == char_span 
-          spans << {char: char, from: i, to: next_idx}
-        end
+        spans << {char: char, from: i, to: next_idx} if char_span.uniq == char_span 
       end
     end
   end
   spans
-end
-
-def distance_between_chars(a, b)
-  a_index
 end
 
 def remove_underscores(msg)
