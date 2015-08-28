@@ -2,8 +2,7 @@ require "pry"
 
 def decode(msg)
   original = msg
-  msg = remove_underscores(msg)
-  repeated_chars?(msg) ? decode(transform(msg)) : msg
+  repeated_chars?(msg) ? decode(transform(msg)) : remove_underscores(msg)
 end
 
 def repeated_chars?(msg)
