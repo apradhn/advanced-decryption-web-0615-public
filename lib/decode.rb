@@ -1,58 +1,54 @@
 require "pry"
 
-def decode(message)
-  original = message
-  message = remove_underscores(message)
-  while has_pairs?(message)
-    pairs_hash = distance_between_characters(message)
-    char = pairs_hash.max_by {|letter, span| span}[0]
-    pair_indices = find_char_indices(char, message)
-    message = transform_message(pair_indices, message)
+def decode(msg)
+  original = msg
+  if repeated_chars?(msg)
+    msg = transform(msg)
+    decode(msg)
+  else
+    msg
   end
-  message
 end
 
-def distance_between_characters(msg)
-  spans = {}
+def repeated_chars?(msg)
+  msg.split("").uniq != msg.split("")
+end
+
+def transform(msg)
+  msg = remove_underscores(msg)
+  spans = char_spans(msg)
+  pair = spans.max_by{|span| span[:to] - span[:from]}
   chars = msg.split("")
-  chars.each_with_index do |a, i|
-    span = 0
-    if spans[a].nil?
-      chars[i..-1].each_with_index do |b, j|
-        if j > 0 && a == b
-          char_span = chars[i+1...j+i]
-          span = j if !(duplicate_chars?(char_span))
+  chars.delete_at(pair[:from])
+  chars.delete_at(pair[:to] - 1)
+  chars << pair[:char]
+  # binding.pry
+  chars.join("")
+end
+
+def char_spans(msg)
+  spans = []
+  chars = msg.split("")
+  chars.each.with_index do |char, i|
+    # does not execute on the last character
+    if i < chars.length
+      # executes if rest of string includes char
+      substring = chars[i+1..-1]
+      if substring.include?(char)
+        next_idx = chars[i+1..-1].index(char) + i + 1
+        char_span = chars[i+1...next_idx]
+        # only records spans that do not contain duplicates
+        if char_span.uniq == char_span 
+          spans << {char: char, from: i, to: next_idx}
         end
       end
-      spans[a] = span
     end
   end
   spans
 end
 
-def duplicate_chars?(char_span)
-  char_span.uniq != char_span
-end
-
-def find_char_indices(char, msg)
-  first_idx = msg.index(char)
-  last_idx = msg.rindex(char)
-  [first_idx, last_idx]
-end
-
-def transform_message(indices, msg)
-  msg = msg.split("")
-  first_idx = indices[0]
-  last_idx = indices[1]
-  char = msg[first_idx]
-  msg.delete_at(first_idx)
-  msg.delete_at(last_idx-1)
-  msg << char
-  msg*""
-end
-
-def has_pairs?(msg)
-  !(msg.split("").uniq == msg.split(""))
+def distance_between_chars(a, b)
+  a_index
 end
 
 def remove_underscores(msg)
