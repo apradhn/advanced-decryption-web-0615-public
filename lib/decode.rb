@@ -1,6 +1,7 @@
 require "pry"
 
 def decode(message)
+  message = remove_underscores(message)
   while has_pairs?(message)
     pairs_hash = distance_between_characters(message)
     char = pairs_hash.max_by {|letter, span| span}[0]
@@ -51,4 +52,9 @@ end
 
 def has_pairs?(msg)
   !(msg.split("").uniq == msg.split(""))
+end
+
+def remove_underscores(msg)
+  underscore_idx = msg.index("_")
+  underscore_idx ? msg[0...underscore_idx] : msg
 end
