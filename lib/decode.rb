@@ -1,6 +1,7 @@
 require "pry"
 
 def decode(message)
+  original = message
   message = remove_underscores(message)
   while has_pairs?(message)
     pairs_hash = distance_between_characters(message)
@@ -19,7 +20,7 @@ def distance_between_characters(msg)
     if spans[a].nil?
       chars[i..-1].each_with_index do |b, j|
         if j > 0 && a == b
-          char_span = chars[i+1...j]
+          char_span = chars[i+1...j+i]
           span = j if !(duplicate_chars?(char_span))
         end
       end
