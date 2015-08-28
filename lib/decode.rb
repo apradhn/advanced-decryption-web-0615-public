@@ -4,8 +4,7 @@ def decode(msg)
   original = msg
   msg = remove_underscores(msg)
   if repeated_chars?(msg)
-    msg = transform(msg)
-    decode(msg)
+    decode(transform(msg))
   else
     msg
   end
