@@ -26,7 +26,6 @@ def longest_char_span(msg)
   max_span = {length: 0}
   chars = msg.split("")
   chars.each.with_index do |char, i|
-    max_span
     # does not execute on the last character
     if i < chars.length
       # executes if rest of string includes char
@@ -35,19 +34,11 @@ def longest_char_span(msg)
         next_idx = j + i + 1
         span = {char: char, from: i, to: next_idx, length: next_idx - i}
         char_span = chars[i+1...next_idx] 
-        if char == sub && span[:length] >= max_span[:length]
-          if j == 0 
-            if span[:length] > max_span[:length]
-              max_span = span
-            elsif span[:from] < max_span[:from]
-              max_span = span
-            end
-          elsif char == sub && char_span.uniq == char_span        
-            if span[:length] > max_span[:length]
-              max_span = span
-            elsif span[:from] < max_span[:from]
-              max_span = span 
-            end
+        if char == sub
+          if span[:length] > max_span[:length] && (j == 0 || char == sub && char_span.uniq == char_span)
+            max_span = span
+          elsif span[:length] == max_span[:length] && span[:from] < max_span[:from]
+            max_span = span
           end
         end
       end
