@@ -14,16 +14,7 @@ def repeated_chars?(msg)
 end
 
 def transform(msg)
-  spans = char_spans(msg)
-  spans = spans.sort do |a, b|
-    b[:length] <=> a[:length]
-  end
-  # binding.pry if msg == "aaccfgeb"
-  if spans.size > 1 && spans[0][:length] == spans[1][:length]
-    pair = spans[0..1].min{|a, b| a[:from] <=> b[:from]}
-  else
-    pair = spans[0]
-  end
+  pair = longest_char_span(msg)
   chars = msg.split("")
   chars.delete_at(pair[:from])
   chars.delete_at(pair[:to] - 1)
@@ -31,27 +22,38 @@ def transform(msg)
   chars.join("")
 end
 
-def char_spans(msg)
-  spans = []
+def longest_char_span(msg)
+  max_span = {length: 0}
   chars = msg.split("")
   chars.each.with_index do |char, i|
+    max_span
     # does not execute on the last character
     if i < chars.length
       # executes if rest of string includes char
       substring = chars[i+1..-1]    
-      if substring.include?(char)
-        substring.each.with_index do |sub, j|
-          char_sub = chars[i+1..j-1].join("")
-          if char == sub && (!(repeated_chars?(char_sub)) || j == 0)
-            next_idx = j + i + 1
-            char_span = chars[i+1...next_idx]      
-            spans << {char: char, from: i, to: next_idx, length: next_idx - i, span: chars[i..next_idx]*""} if char_span.uniq == char_span       
+      substring.each.with_index do |sub, j|
+        next_idx = j + i + 1
+        span = {char: char, from: i, to: next_idx, length: next_idx - i}
+        char_span = chars[i+1...next_idx] 
+        if char == sub && span[:length] >= max_span[:length]
+          if j == 0 
+            if span[:length] > max_span[:length]
+              max_span = span
+            elsif span[:from] < max_span[:from]
+              max_span = span
+            end
+          elsif char == sub && char_span.uniq == char_span        
+            if span[:length] > max_span[:length]
+              max_span = span
+            elsif span[:from] < max_span[:from]
+              max_span = span 
+            end
           end
         end
       end
     end
   end
-  spans
+  max_span
 end
 
 def remove_underscores(msg)
