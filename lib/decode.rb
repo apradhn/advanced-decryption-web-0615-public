@@ -2,11 +2,7 @@ require "pry"
 
 def decode(msg)
   original = msg
-  if repeated_chars?(msg)
-    decode(transform(msg))
-  else
-    remove_underscores(msg)
-  end
+  repeated_chars?(msg) ? decode(transform(msg)) : remove_underscores(msg)
 end
 
 def repeated_chars?(msg)
@@ -34,12 +30,8 @@ def longest_char_span(msg)
         next_idx = j + i + 1
         span = {char: char, from: i, to: next_idx, length: next_idx - i}
         char_span = chars[i+1...next_idx] 
-        if char == sub
-          if span[:length] > max_span[:length] && (j == 0 || char == sub && char_span.uniq == char_span)
-            max_span = span
-          elsif span[:length] == max_span[:length] && span[:from] < max_span[:from]
-            max_span = span
-          end
+        if char == sub && span[:length] > max_span[:length] && (j == 0 || char_span.uniq == char_span)
+          max_span = span
         end
       end
     end
